@@ -689,77 +689,7 @@ button {
 }
 
 
-/* ===== Search Bar ===== */
-
-.search-wrapper {
-  position: relative;
-}
-
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 6px 10px;
-}
-
-.search-input-wrapper input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: white;
-  width: 220px;
-  font-size: 14px;
-}
-
-.search-input-wrapper input::placeholder {
-  color: #aaa;
-}
-
-.search-results {
-  position: absolute;
-  top: 45px;
-  right: 0;
-  width: 320px;
-  max-height: 400px;
-  overflow-y: auto;
-  background: #181818;
-  border-radius: 6px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  z-index: 9999;
-}
-
-.search-result {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-}
-
-.search-result:hover {
-  background: #333;
-}
-
-.search-result img {
-  width: 50px;
-  height: 75px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.search-message {
-  padding: 15px;
-  text-align: center;
-  color: #aaa;
-}
-
+/* LOGIN_PAGE */
 
 .login-page {
   position: relative;
@@ -1081,4 +1011,279 @@ button {
   margin:35px 0 20px;
   font-size:28px;
   font-weight:700;
+}
+
+/* Landing Header */
+
+.landing-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  padding: 25px 60px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-logo {
+  color: #e50914;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+.signin-btn {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signin-btn:hover {
+  background: #f40612;
+}
+
+/* =========================
+   LANDING PAGE
+========================= */
+
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 0.7)
+    ),
+    url("/banner.jpg");
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 20px;
+}
+
+.hero h1 {
+  font-size: 64px;
+  font-weight: 800;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.email-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.email-box input {
+  width: 400px;
+  height: 58px;
+  padding: 0 15px;
+  font-size: 18px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+}
+
+.email-box button {
+  height: 58px;
+  padding: 0 28px;
+  background: #e50914;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* =========================
+   PAYMENT PAGE
+========================= */
+
+.payment-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  padding: 30px;
+}
+
+.payment-card {
+  width: 380px;
+  background: #181818;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.payment-card h1 {
+  margin-bottom: 30px;
+}
+
+.selected-plan {
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 25px;
+}
+
+.selected-plan h2 {
+  margin-bottom: 10px;
+}
+
+.price {
+  font-size: 36px;
+  font-weight: bold;
+  color: #e50914;
+}
+
+.selected-plan p {
+  color: #aaa;
+}
+
+.payment-card button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #e50914;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.payment-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   PLANS SECTION
+========================= */
+
+.plans-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 50px auto 0;
+  text-align: center;
+  padding: 20px;
+}
+
+.plans-section h2 {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.plans-subtitle {
+  color: #bbb;
+  margin-bottom: 30px;
+}
+
+.plans-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.plan-card {
+  position: relative;
+  width: 300px;
+  min-height: 280px;
+  padding: 30px 25px;
+  border: 1px solid #444;
+  border-radius: 12px;
+  background: #181818;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.plan-card:hover {
+  transform: translateY(-6px);
+  border-color: #e50914;
+}
+
+.plan-card h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.plan-price {
+  font-size: 34px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.plan-card p {
+  color: #bbb;
+  margin: 8px 0;
+}
+
+.plan-card button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background: #e50914;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.plan-card button:hover {
+  background: #f40612;
+}
+
+.popular {
+  border: 2px solid #e50914;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e50914;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .plans-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .plan-card {
+    width: 90%;
+    max-width: 350px;
+  }
 }
