@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
 
 import Navbar from "../../components/Navbar";
 import Banner from "../../components/Banner";
@@ -18,12 +21,24 @@ type Movie = {
 };
 
 export default function BrowsePage() {
+  const router = useRouter();
+
   const [selectedMovie, setSelectedMovie] =
     useState<Movie | null>(null);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace("/login");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
   return (
     <main className="browse-page">
-      <Navbar/>
+      <Navbar />
 
       <Banner />
 
@@ -65,15 +80,13 @@ export default function BrowsePage() {
       </div>
 
       {selectedMovie && (
-  <TrailerModal
-    movieId={selectedMovie.id}
-    title={selectedMovie.title || selectedMovie.name || ""}
-    type={selectedMovie.title ? 
-      "movie" : "tv"
-    }
-    onClose={() => setSelectedMovie(null)}
-  />
-)}
+        <TrailerModal
+          movieId={selectedMovie.id}
+          title={selectedMovie.title || selectedMovie.name || ""}
+          type={selectedMovie.title ? "movie" : "tv"}
+          onClose={() => setSelectedMovie(null)}
+        />
+      )}
     </main>
   );
 }

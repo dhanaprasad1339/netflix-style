@@ -44,6 +44,8 @@ export default function MovieRow({
     fetchMovies();
   }, [endpoint, title]);
 
+  
+
   return (
     <section className="movie-row">
       <h2>{title}</h2>

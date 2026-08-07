@@ -72,30 +72,23 @@ export default function MyListPage() {
     };
   }, []);
 
-  const removeFromMyList = async (
-    movie: Movie
-  ) => {
-    const user = auth.currentUser;
+  const removeFromMyList = async (movie: Movie) => {
+  const user = auth.currentUser;
 
-    if (!user) return;
+  if (!user) return;
 
-    try {
-      const userRef = doc(
-        db,
-        "users",
-        user.uid
-      );
+  try {
+    const userRef = doc(db, "users", user.uid);
 
-      await updateDoc(userRef, {
-        myList: arrayRemove(movie),
-      });
-    } catch (error) {
-      console.error(
-        "Remove error:",
-        error
-      );
-    }
-  };
+    await updateDoc(userRef, {
+      myList: arrayRemove(movie),
+    });
+
+    alert("Removed from My List");
+  } catch (error) {
+    console.error("Remove error:", error);
+  }
+};
 
   return (
     <main className="browse-page">

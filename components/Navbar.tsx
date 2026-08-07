@@ -1,11 +1,32 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-
+import SearchBar from "./SearchBar";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
+type Movie = {
+  id: number;
+  title?: string;
+  name?: string;
+  poster_path?: string;
+  backdrop_path?: string;
+  overview?: string;
+  vote_average?: number;
+};
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const handleLogout = async () => {
+  try {
+    await signOut(auth);
+    router.push("/login");
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
 
   return (
     <nav className="navbar">
@@ -46,14 +67,16 @@ export default function Navbar() {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="nav-right">
-        <Link href="/search" className="search-icon">
-          🔍
-        </Link>
+      <div className="navbar-right">
+        <SearchBar
+  onMovieSelect={(movie) => {
+    setSelectedMovie(movie);
+  }}
+/>
 
-        <Link href="/profile" className="profile-icon">
-          👤
-        </Link>
+      <button onClick={handleLogout} className="profile-icon">
+  👤
+</button>
       </div>
     </nav>
   );

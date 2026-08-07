@@ -10,7 +10,6 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
-
 type Movie = {
   id: number;
 
@@ -75,7 +74,7 @@ export default function MovieCard({
   };
 
   // My List
-const toggleMyList = async (
+  const toggleMyList = async (
   e: React.MouseEvent<HTMLButtonElement>
 ) => {
   e.preventDefault();
@@ -83,31 +82,37 @@ const toggleMyList = async (
 
   const user = auth.currentUser;
 
-  console.log("Current User:", user);
-
   if (!user) {
     alert("Please login first");
     return;
   }
 
-  console.log("User UID:", user.uid);
-
   const userRef = doc(db, "users", user.uid);
 
-  if (addedToList) {
-    await updateDoc(userRef, {
-      myList: arrayRemove(movie),
-    });
-  } else {
-    await setDoc(
-  doc(db, "users", user.uid),
-  {
-    myList: arrayUnion(movie),
-  },
-  { merge: true }
-);
+  try {
+    if (addedToList) {
+      await setDoc(
+        userRef,
+        {
+          myList: arrayRemove(movie),
+        },
+        { merge: true }
+      );
+    } else {
+      await setDoc(
+        userRef,
+        {
+          myList: arrayUnion(movie),
+        },
+        { merge: true }
+      );
+    }
+
+    setAddedToList(!addedToList);
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
   }
-  setAddedToList(!addedToList);
 };
 
   return (

@@ -11,6 +11,7 @@ type Movie = {
   backdrop_path?: string;
   overview?: string;
   vote_average?: number;
+  media_type?: "movie" | "tv";
 };
 
 type Props = {
