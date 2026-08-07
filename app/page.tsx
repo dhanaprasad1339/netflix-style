@@ -4,6 +4,7 @@ import "./landing.css";
 export default function Home() {
   return (
     <main className="landing">
+      
       <div className="overlay">
         <nav className="landing-navbar">
           <h1 className="logo">NETFLIX</h1>

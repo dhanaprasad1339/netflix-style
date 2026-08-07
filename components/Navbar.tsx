@@ -64,6 +64,7 @@ export default function Navbar() {
         >
           My List
         </Link>
+        
       </div>
 
       {/* RIGHT SIDE */}
@@ -73,6 +74,7 @@ export default function Navbar() {
     setSelectedMovie(movie);
   }}
 />
+      
 
       <button onClick={handleLogout} className="profile-icon">
   👤
