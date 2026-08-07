@@ -336,62 +336,49 @@ button {
   display: block;
 }
 
-.movie-overlay {
+.movie-card-overlay {
   position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  padding: 50px 12px 12px;
-
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.95),
-    rgba(0, 0, 0, 0)
-  );
-
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(0,0,0,.9), transparent);
   opacity: 0;
-
-  transition: opacity 0.25s ease;
+  transition: .3s;
 }
 
-.movie-card:hover .movie-overlay {
+.movie-card:hover .movie-card-overlay {
   opacity: 1;
 }
 
-.movie-overlay h3 {
-  font-size: 14px;
-
+.movie-card-title {
+  font-size: 15px;
   margin-bottom: 8px;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.movie-actions {
+.movie-card-info {
   display: flex;
-  gap: 7px;
-
-  margin-bottom: 8px;
+  gap: 10px;
+  font-size: 12px;
+  margin-bottom: 10px;
 }
 
-.movie-actions button {
-  width: 30px;
-  height: 30px;
+.movie-card-buttons {
+  display: flex;
+  gap: 10px;
+}
 
+.movie-play-button,
+.movie-list-button {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-
-  border: 1px solid #aaa;
-
-  background: #222;
-  color: #fff;
-}
-
-.movie-actions button:hover {
-  background: #fff;
-  color: #000;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .movie-rating {
@@ -498,9 +485,60 @@ button {
     height: 205px;
   }
 
-  .movie-overlay {
-    padding: 35px 8px 8px;
-  }
+  .movie-card-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 50px 12px 12px;
+
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.95),
+    rgba(0,0,0,0)
+  );
+
+  opacity: 0;
+  transition: opacity .25s;
+}
+
+.movie-card:hover .movie-card-overlay {
+  opacity: 1;
+}
+
+.movie-card-title{
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.movie-card-info{
+  display:flex;
+  gap:8px;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.movie-card-buttons{
+  display:flex;
+  gap:8px;
+}
+
+.movie-play-button,
+.movie-list-button{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid #aaa;
+  background:#222;
+  color:#fff;
+}
+
+.movie-play-button:hover,
+.movie-list-button:hover{
+  background:#fff;
+  color:#000;
+}
 
   .movie-actions button {
     width: 26px;
@@ -601,4 +639,51 @@ button {
   .my-list-card img {
     height: 230px;
   }
+}
+
+/* ===== Trailer Modal ===== */
+
+.trailer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.trailer-modal {
+  position: relative;
+  width: 90%;
+  max-width: 900px;
+  background: #111;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.trailer-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.trailer-video iframe {
+  width: 100%;
+  height: 500px;
+  border: none;
+}
+
+.trailer-loading {
+  text-align: center;
+  color: white;
+  padding: 40px;
 }

@@ -23,11 +23,7 @@ export default function BrowsePage() {
 
   return (
     <main className="browse-page">
-      <Navbar
-        onMovieSelect={(movie) =>
-          setSelectedMovie(movie)
-        }
-      />
+      <Navbar/>
 
       <Banner />
 
@@ -68,10 +64,16 @@ export default function BrowsePage() {
         />
       </div>
 
-      <TrailerModal
-        movie={selectedMovie}
-        onClose={() => setSelectedMovie(null)}
-      />
+      {selectedMovie && (
+  <TrailerModal
+    movieId={selectedMovie.id}
+    title={selectedMovie.title || selectedMovie.name || ""}
+    type={selectedMovie.title ? 
+      "movie" : "tv"
+    }
+    onClose={() => setSelectedMovie(null)}
+  />
+)}
     </main>
   );
 }

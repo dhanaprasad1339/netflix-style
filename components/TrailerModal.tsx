@@ -1,40 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { tmdb } from "../lib/tmdb";
 
-type Movie = {
-  id: number;
-  title?: string;
-  name?: string;
-  backdrop_path?: string;
-};
 
-type Props = {
-  movie: Movie | null;
+type TrailerModalProps = {
+  movieId: number;
+  title: string;
+  type: "movie" | "tv"
   onClose: () => void;
 };
 
 export default function TrailerModal({
-  movie,
+  movieId,
+  title,
+  type,
   onClose,
-}: Props) {
-  const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+}: TrailerModalProps) {
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!movie) return;
-
     const getTrailer = async () => {
       try {
-        setLoading(true);
-        setVideoKey(null);
+        const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
-        const response = await tmdb.get(
-          `/movie/${movie.id}/videos`
+        const response = await fetch(
+          `https://api.themoviedb.org/3/${type}/${movieId}/videos?api_key=${apiKey}&language=en-US`
         );
 
-        const videos = response.data.results || [];
+        const data = await response.json();
+        console.log("Type:", type);
+        console.log("movieId:", movieId);
+        console.log(data);
+        console.log("Results:", data.results);
+        
+
+        console.log("API URL:", `https://api.themoviedb.org/3/${type}/${movieId}/videos?api_key=${apiKey}`);
+
+        const videos = data.results || [];
 
         const trailer =
           videos.find(
@@ -45,16 +48,16 @@ export default function TrailerModal({
           ) ||
           videos.find(
             (video: any) =>
-              video.site === "YouTube" &&
-              video.type === "Trailer"
+              video.site === "YouTube" && video.type === "Trailer"
           ) ||
           videos.find(
             (video: any) =>
-              video.site === "YouTube"
+              video.site === "YouTube" && video.type === "Teaser"
           );
+        console.log("Trailer:", trailer);
 
         if (trailer) {
-          setVideoKey(trailer.key);
+          setTrailerKey(trailer.key);
         }
       } catch (error) {
         console.error("Trailer error:", error);
@@ -64,22 +67,19 @@ export default function TrailerModal({
     };
 
     getTrailer();
-  }, [movie]);
-
-  if (!movie) return null;
+  }, [movieId, type]);
 
   return (
-    <div className="trailer-backdrop" onClick={onClose}>
+    <div className="trailer-overlay" onClick={onClose}>
       <div
         className="trailer-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          className="trailer-close"
-          onClick={onClose}
-        >
+        <button className="trailer-close" onClick={onClose}>
           ✕
         </button>
+
+        <h2>{title} - Trailer</h2>
 
         {loading && (
           <div className="trailer-loading">
@@ -87,18 +87,20 @@ export default function TrailerModal({
           </div>
         )}
 
-        {!loading && videoKey && (
-          <iframe
-            src={`https://www.youtube.com/embed/${videoKey}?autoplay=1`}
-            title={`${movie.title || movie.name} Trailer`}
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
-        )}
+        {!loading && trailerKey && (
+          <div className="trailer-video">
+            <iframe
+      src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&rel=0`}
+      title={`${title} Trailer`}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+    />
+  </div>
+)}
 
-        {!loading && !videoKey && (
+        {!loading && !trailerKey && (
           <div className="trailer-loading">
-            Trailer not available.
+            Trailer not available for this movie.
           </div>
         )}
       </div>

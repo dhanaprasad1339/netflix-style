@@ -1,83 +1,59 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signOut } from "firebase/auth";
-import { auth } from "../lib/firebase";
-import SearchBar from "./SearchBar";
+import { usePathname } from "next/navigation";
 
-type Movie = {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path?: string;
-  backdrop_path?: string;
-  overview?: string;
-  vote_average?: number;
-};
 
-type Props = {
-  onMovieSelect: (movie: Movie) => void;
-};
-
-export default function Navbar({
-  onMovieSelect,
-}: Props) {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/login");
-  };
+export default function Navbar() {
+  const pathname = usePathname();
 
   return (
     <nav className="navbar">
-      <div className="navbar-left">
-        <Link href="/browse" className="logo">
-          NETFLIX
+      {/* LOGO */}
+      <Link href="/browse" className="netflix-logo">
+        NETFLIX
+      </Link>
+
+      {/* NAV LINKS */}
+      <div className="nav-links">
+        <Link
+          href="/browse"
+          className={pathname === "/browse" ? "active" : ""}
+        >
+          Home
         </Link>
 
-        <div className="nav-links">
-          <Link href="/browse">
-            Home
-          </Link>
+        <Link
+          href="/tv-shows"
+          className={pathname === "/tv-shows" ? "active" : ""}
+        >
+          TV Shows
+        </Link>
 
-          <Link href="/browse">
-            TV Shows
-          </Link>
+        <Link
+          href="/movies"
+          className={pathname === "/movies" ? "active" : ""}
+        >
+          Movies
+        </Link>
 
-          <Link href="/browse">
-            Movies
-          </Link>
-
-          <Link href="/my-list">
-            My List
-          </Link>
-        </div>
+        <Link
+          href="/my-list"
+          className={pathname === "/my-list" ? "active" : ""}
+        >
+          My List
+        </Link>
       </div>
 
-      <div className="navbar-right">
-        <SearchBar
-          onMovieSelect={onMovieSelect}
-        />
+      {/* RIGHT SIDE */}
+      <div className="nav-right">
+        <Link href="/search" className="search-icon">
+          🔍
+        </Link>
 
-        <div className="profile">
-          <div className="profile-avatar">
-            👤
-          </div>
-
-          <div className="profile-menu">
-            <p>My Profile</p>
-
-            <Link href="/my-list">
-              My List
-            </Link>
-
-            <button onClick={handleLogout}>
-              Sign out
-            </button>
-          </div>
-        </div>
+        <Link href="/profile" className="profile-icon">
+          👤
+        </Link>
       </div>
     </nav>
   );

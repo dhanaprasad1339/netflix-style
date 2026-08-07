@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { tmdb } from "../lib/tmdb";
+import TrailerModal from "./TrailerModal";
 
 type Movie = {
   id: number;
@@ -10,10 +11,12 @@ type Movie = {
   overview?: string;
   backdrop_path?: string;
   vote_average?: number;
+  media_type?: string;
 };
 
 export default function Banner() {
   const [movie, setMovie] = useState<Movie | null>(null);
+  const [playTrailer, setPlayTrailer] = useState(false);
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -81,7 +84,9 @@ export default function Banner() {
         </p>
 
         <div className="banner-buttons">
-          <button className="play-button">
+          <button className="play-button"
+            onClick={() => setPlayTrailer(true)}
+          >
             ▶ Play
           </button>
 
@@ -90,6 +95,15 @@ export default function Banner() {
           </button>
         </div>
       </div>
+      {playTrailer && movie && (
+  <TrailerModal
+    movieId={movie.id}
+    title={title || ""}
+     type = {movie.media_type === "tv" ? "tv" : "movie"}
+    onClose={() => 
+      setPlayTrailer(false)}
+  />
+)}
     </section>
   );
 }

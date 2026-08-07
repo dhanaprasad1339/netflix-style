@@ -65,6 +65,7 @@ export default function MovieRow({
                 <MovieCard
                   key={movie.id}
                   movie={movie}
+                  type={movie.title ? "movie" : "tv"}
                 />
               );
             })}

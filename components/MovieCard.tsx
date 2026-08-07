@@ -1,107 +1,181 @@
 "use client";
 
 import { useState } from "react";
-import {
-  arrayUnion,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-
-import { auth, db } from "../lib/firebase";
 import TrailerModal from "./TrailerModal";
+import {
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+import { auth, db } from "../lib/firebase";
 
 type Movie = {
   id: number;
+
   title?: string;
   name?: string;
-  poster_path?: string;
-  backdrop_path?: string;
+
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+
   overview?: string;
+
   vote_average?: number;
+
+  first_air_date?: string;
+  release_date?: string;
 };
 
 type Props = {
   movie: Movie;
+  type?: "movie" | "tv";
 };
 
-export default function MovieCard({
+export default function MovieCard({ 
   movie,
+   type = "movie", 
+
 }: Props) {
-  const [showTrailer, setShowTrailer] =
-    useState(false);
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [addedToList, setAddedToList] = useState(false);
 
-  const addToMyList = async () => {
-    const user = auth.currentUser;
+  // Movie title OR TV show name
+  const title = movie.title || movie.name || "Movie";
 
-    if (!user) {
-      alert("Please login first.");
-      return;
-    }
+  // Poster
+  const poster = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "/placeholder.jpg";
 
-    try {
-      const userRef = doc(db, "users", user.uid);
+  // Rating
+  const rating =
+    movie.vote_average !== undefined
+      ? movie.vote_average.toFixed(1)
+      : "N/A";
 
-      await updateDoc(userRef, {
-        myList: arrayUnion({
-          id: movie.id,
-          title: movie.title || movie.name || "",
-          poster_path: movie.poster_path || "",
-          backdrop_path: movie.backdrop_path || "",
-          overview: movie.overview || "",
-          vote_average: movie.vote_average || 0,
-        }),
-      });
+  // Year
+  const date =
+    movie.release_date || movie.first_air_date;
 
-      alert("Added to My List ❤️");
-    } catch (error) {
-      console.error("My List error:", error);
-    }
+  const year = date
+    ? new Date(date).getFullYear()
+    : "2026";
+
+  // Trailer
+  const openTrailer = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    alert(`Movie ID: ${movie.id}, Type: ${type}`);
+
+    setShowTrailer(true);
   };
+
+  // My List
+const toggleMyList = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const user = auth.currentUser;
+
+  console.log("Current User:", user);
+
+  if (!user) {
+    alert("Please login first");
+    return;
+  }
+
+  console.log("User UID:", user.uid);
+
+  const userRef = doc(db, "users", user.uid);
+
+  if (addedToList) {
+    await updateDoc(userRef, {
+      myList: arrayRemove(movie),
+    });
+  } else {
+    await setDoc(
+  doc(db, "users", user.uid),
+  {
+    myList: arrayUnion(movie),
+  },
+  { merge: true }
+);
+  }
+  setAddedToList(!addedToList);
+};
 
   return (
     <>
       <div className="movie-card">
+
+        {/* POSTER */}
         <img
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title || movie.name || "Movie"}
+          src={poster}
+          alt={title}
+          className="movie-card-image"
         />
 
-        <div className="movie-overlay">
-          <h3>
-            {movie.title || movie.name}
+        {/* HOVER CONTENT */}
+        <div className="movie-card-overlay">
+
+          <h3 className="movie-card-title">
+            {title}
           </h3>
 
-          <div className="movie-actions">
+          <div className="movie-card-info">
+            <span className="movie-rating">
+              ⭐ {rating}
+            </span>
+
+            <span>HD</span>
+
+            <span>{year}</span>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="movie-card-buttons">
+
+            {/* PLAY */}
             <button
-              onClick={() => setShowTrailer(true)}
-              title="Play Trailer"
+              type="button"
+              className="movie-play-button"
+              onClick={openTrailer}
             >
               ▶
             </button>
 
+            {/* MY LIST */}
             <button
-              onClick={addToMyList}
-              title="Add to My List"
+              type="button"
+              className={`movie-list-button ${
+                addedToList ? "added" : ""
+              }`}
+              onClick={toggleMyList}
             >
-              +
+              {addedToList ? "✓" : "+"}
             </button>
 
-            <button title="Like">
-              👍
-            </button>
           </div>
 
-          <div className="movie-rating">
-            ⭐{" "}
-            {movie.vote_average?.toFixed(1)}
-          </div>
         </div>
       </div>
 
-      <TrailerModal
-        movie={showTrailer ? movie : null}
-        onClose={() => setShowTrailer(false)}
-      />
+      {/* TRAILER MODAL */}
+      {showTrailer && movie.id !== undefined && 
+      (
+        <TrailerModal
+          movieId={movie.id}
+          title={title}
+          type={type}
+          onClose={() => setShowTrailer(false)}
+        />
+      )}
     </>
   );
 }

@@ -21,7 +21,7 @@ type Movie = {
   backdrop_path?: string;
   overview?: string;
   vote_average?: number;
-  media_type?: string;
+  media_type?: "movie" | "tv";
 };
 
 export default function MyListPage() {
@@ -99,11 +99,7 @@ export default function MyListPage() {
 
   return (
     <main className="browse-page">
-      <Navbar
-        onMovieSelect={(movie) =>
-          setSelectedMovie(movie)
-        }
-      />
+      <Navbar/>
 
       <section className="my-list-page">
         <h1>My List ❤️</h1>
@@ -174,12 +170,15 @@ export default function MyListPage() {
         )}
       </section>
 
-      <TrailerModal
-        movie={selectedMovie}
-        onClose={() =>
-          setSelectedMovie(null)
-        }
-      />
+      {selectedMovie && (
+  <TrailerModal
+    movieId={selectedMovie.id}
+    type={selectedMovie.media_type || "movie"}
+    title={selectedMovie.title ||
+       selectedMovie.name || "Trailer"}
+    onClose={() => setSelectedMovie(null)}
+  />
+)}
     </main>
   );
 }
