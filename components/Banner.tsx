@@ -17,6 +17,7 @@ type Movie = {
 export default function Banner() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [playTrailer, setPlayTrailer] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     const fetchMovie = async () => {

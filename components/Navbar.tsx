@@ -1,11 +1,9 @@
 "use client";
+
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../lib/firebase";
+
 type Movie = {
   id: number;
   title?: string;
@@ -15,21 +13,14 @@ type Movie = {
   overview?: string;
   vote_average?: number;
 };
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const handleLogout = async () => {
-  try {
-    await signOut(auth);
-    router.push("/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
 
   return (
     <nav className="navbar">
+
       {/* LOGO */}
       <Link href="/browse" className="netflix-logo">
         NETFLIX
@@ -37,6 +28,7 @@ export default function Navbar() {
 
       {/* NAV LINKS */}
       <div className="nav-links">
+
         <Link
           href="/browse"
           className={pathname === "/browse" ? "active" : ""}
@@ -64,22 +56,29 @@ export default function Navbar() {
         >
           My List
         </Link>
-        
+
       </div>
 
       {/* RIGHT SIDE */}
       <div className="navbar-right">
-        <SearchBar
-  onMovieSelect={(movie) => {
-    setSelectedMovie(movie);
-  }}
-/>
-      
 
-      <button onClick={handleLogout} className="profile-icon">
-  👤
-</button>
+        <SearchBar
+          onMovieSelect={(movie) => {
+            router.push(`/movie/${movie.id}`);
+          }}
+        />
+
+        {/* PROFILE */}
+        <button
+          onClick={() => router.push("/profile")}
+          className="profile-icon"
+          type="button"
+        >
+          👤
+        </button>
+
       </div>
+
     </nav>
   );
 }
