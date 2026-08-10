@@ -30,6 +30,7 @@ export default function SearchBar({
 
     if (!value.trim()) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
@@ -38,30 +39,49 @@ export default function SearchBar({
 
       const response = await tmdb.get("/search/multi", {
         params: {
-          query: value,
+          query: value.trim(),
           page: 1,
           include_adult: false,
         },
       });
 
-      const filtered = response.data.results.filter(
-        (movie: Movie) =>
-          movie.poster_path &&
-          (movie.title || movie.name)
-      );
+      const filtered = response.data.results
+        .filter(
+          (movie: Movie) =>
+            movie.poster_path &&
+            (movie.title || movie.name) &&
+            (movie.media_type === "movie" ||
+              movie.media_type === "tv")
+        )
+        .slice(0, 8);
 
       setResults(filtered);
     } catch (error) {
       console.error("Search error:", error);
+      setResults([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSelect = (movie: Movie) => {
+    onMovieSelect(movie);
+
+    setQuery("");
+    setResults([]);
+  };
+
   return (
     <div className="search-wrapper">
+
+      {/* SEARCH INPUT */}
       <div className="search-input-wrapper">
-        <span>🔍</span>
+        <span
+          className="search-icon"
+          aria-hidden="true"
+        >
+          🔍
+        </span>
 
         <input
           type="text"
@@ -70,52 +90,87 @@ export default function SearchBar({
           onChange={(e) =>
             searchMovies(e.target.value)
           }
+          aria-label="Search movies and shows"
         />
+
+        {query && (
+          <button
+            type="button"
+            className="search-clear"
+            onClick={() => {
+              setQuery("");
+              setResults([]);
+            }}
+            aria-label="Clear search"
+          >
+            ×
+          </button>
+        )}
       </div>
 
+      {/* SEARCH DROPDOWN */}
       {query && (
-        <div className="search-results">
+        <div className="navbar-search-results">
+
+          {/* LOADING */}
           {loading && (
             <p className="search-message">
               Searching...
             </p>
           )}
 
+          {/* NO RESULTS */}
           {!loading && results.length === 0 && (
             <p className="search-message">
-              No movies found.
+              No movies or shows found.
             </p>
           )}
 
-          {results.map((movie) => (
-            <button
-              key={movie.id}
-              className="search-result"
-              onClick={() => {
-                onMovieSelect(movie);
-                setQuery("");
-                setResults([]);
-              }}
-            >
-              <img
-                src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                alt={movie.title || movie.name}
-              />
+          {/* RESULTS */}
+          {!loading &&
+            results.map((movie) => (
+              <button
+                key={`${movie.media_type}-${movie.id}`}
+                type="button"
+                className="search-result"
+                onClick={() => handleSelect(movie)}
+              >
 
-              <div>
-                <strong>
-                  {movie.title || movie.name}
-                </strong>
+                <img
+                  src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                  alt={movie.title || movie.name}
+                />
 
-                <small>
-                  ⭐{" "}
-                  {movie.vote_average?.toFixed(1)}
-                </small>
-              </div>
-            </button>
-          ))}
+                <div className="search-result-info">
+
+                  <strong>
+                    {movie.title || movie.name}
+                  </strong>
+
+                  <div className="search-result-meta">
+                    <span>
+                      {movie.media_type === "tv"
+                        ? "TV Show"
+                        : "Movie"}
+                    </span>
+
+                    <span>
+                      ⭐{" "}
+                      {typeof movie.vote_average ===
+                      "number"
+                        ? movie.vote_average.toFixed(1)
+                        : "N/A"}
+                    </span>
+                  </div>
+
+                </div>
+
+              </button>
+            ))}
+
         </div>
       )}
+
     </div>
   );
 }
