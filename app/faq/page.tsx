@@ -48,29 +48,7 @@ export default function FAQPage() {
         </p>
       </section>
 
-      {/* TV Shows & Movies */}
-      <section className="faq-section">
-        <h2>TV Shows & Movies</h2>
-
-        <div className="faq-image-grid">
-          <div>THE WITCHER</div>
-          <div>AVATAR</div>
-          <div>STRANGER THINGS</div>
-          <div>BRIDGERTON</div>
-        </div>
-
-        <p>
-          Netflix content varies by region and may change over time.
-          You can watch a variety of award-winning Netflix originals,
-          TV shows, movies, documentaries, and more.
-        </p>
-
-        <p>
-          The more you watch, the better Netflix gets at recommending
-          TV shows and movies.
-        </p>
-      </section>
-
+     
       {/* Supported Devices */}
       <section className="faq-section">
         <h2>Supported Devices</h2>
@@ -200,6 +178,7 @@ export default function FAQPage() {
         <p>Billing and Payments</p>
         <p>Netflix Gift Cards</p>
       </section>
+      
 
       {/* Footer */}
       <footer className="faq-footer">
@@ -217,6 +196,7 @@ export default function FAQPage() {
           <span>Privacy</span>
           <span>Cookie Preferences</span>
         </div>
+        
       </footer>
 
     </main>

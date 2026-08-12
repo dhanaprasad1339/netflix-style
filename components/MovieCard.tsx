@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import TrailerModal from "./TrailerModal";
+
 import {
   doc,
   setDoc,
-  updateDoc,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+
 import { auth, db } from "../lib/firebase";
+
 type Movie = {
   id: number;
 
@@ -21,10 +23,13 @@ type Movie = {
 
   overview?: string;
 
-  vote_average?: number;
+  vote_average?: number | string;
 
   first_air_date?: string;
   release_date?: string;
+
+  // Cloudflare R2 video URL
+  videoUrl?: string;
 };
 
 type Props = {
@@ -32,101 +37,154 @@ type Props = {
   type?: "movie" | "tv";
 };
 
-export default function MovieCard({ 
+export default function MovieCard({
   movie,
-   type = "movie", 
-
+  type = "movie",
 }: Props) {
   const [showTrailer, setShowTrailer] = useState(false);
   const [addedToList, setAddedToList] = useState(false);
 
-  // Movie title OR TV show name
-  const title = movie.title || movie.name || "Movie";
+  // =========================
+  // TITLE
+  // =========================
 
-  // Poster
-  const poster = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : "/placeholder.jpg";
+  const title =
+    movie.title ||
+    movie.name ||
+    "Movie";
 
-  // Rating
+  // =========================
+  // POSTER
+  // =========================
+  // IMPORTANT:
+  // poster_path now contains the
+  // Firestore posterUrl directly.
+  //
+  // NO TMDB URL here.
+
+  const poster =
+    movie.poster_path ||
+    "/placeholder.jpg";
+
+  // =========================
+  // RATING
+  // =========================
+
   const rating =
     movie.vote_average !== undefined
-      ? movie.vote_average.toFixed(1)
+    movie.vote_average !== null &&
+    !isNaN(Number(movie.vote_average))
+      ?
+      Number(movie.vote_average).toFixed(1)
       : "N/A";
 
-  // Year
+  // =========================
+  // YEAR
+  // =========================
+
   const date =
-    movie.release_date || movie.first_air_date;
+    movie.release_date ||
+    movie.first_air_date;
 
   const year = date
     ? new Date(date).getFullYear()
     : "2026";
 
-  // Trailer
+  // =========================
+  // PLAY
+  // =========================
+
   const openTrailer = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    alert(`Movie ID: ${movie.id}, Type: ${type}`);
+
+    if (!movie.videoUrl) {
+      alert(
+        "Video URL not found in Firestore."
+      );
+      return;
+    }
 
     setShowTrailer(true);
   };
 
-  // My List
+  // =========================
+  // MY LIST
+  // =========================
+
   const toggleMyList = async (
-  e: React.MouseEvent<HTMLButtonElement>
-) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const user = auth.currentUser;
+    const user = auth.currentUser;
 
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  const userRef = doc(db, "users", user.uid);
-
-  try {
-    if (addedToList) {
-      await setDoc(
-        userRef,
-        {
-          myList: arrayRemove(movie),
-        },
-        { merge: true }
-      );
-    } else {
-      await setDoc(
-        userRef,
-        {
-          myList: arrayUnion(movie),
-        },
-        { merge: true }
-      );
+    if (!user) {
+      alert("Please login first");
+      return;
     }
 
-    setAddedToList(!addedToList);
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong");
-  }
-};
+    const userRef = doc(
+      db,
+      "users",
+      user.uid
+    );
+
+    try {
+      if (addedToList) {
+        await setDoc(
+          userRef,
+          {
+            myList: arrayRemove(movie),
+          },
+          {
+            merge: true,
+          }
+        );
+      } else {
+        await setDoc(
+          userRef,
+          {
+            myList: arrayUnion(movie),
+          },
+          {
+            merge: true,
+          }
+        );
+      }
+
+      setAddedToList(!addedToList);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
+  };
 
   return (
     <>
+      {/* =========================
+          MOVIE CARD
+      ========================= */}
+
       <div className="movie-card">
 
         {/* POSTER */}
+
         <img
           src={poster}
           alt={title}
           className="movie-card-image"
+          onError={(e) => {
+            e.currentTarget.src =
+              "/placeholder.jpg";
+          }}
         />
 
         {/* HOVER CONTENT */}
+
         <div className="movie-card-overlay">
 
           <h3 className="movie-card-title">
@@ -134,19 +192,23 @@ export default function MovieCard({
           </h3>
 
           <div className="movie-card-info">
+
             <span className="movie-rating">
-              ⭐ {rating}
+              ⭐9 {rating}
             </span>
 
             <span>HD</span>
 
             <span>{year}</span>
+
           </div>
 
           {/* BUTTONS */}
+
           <div className="movie-card-buttons">
 
             {/* PLAY */}
+
             <button
               type="button"
               className="movie-play-button"
@@ -156,14 +218,19 @@ export default function MovieCard({
             </button>
 
             {/* MY LIST */}
+
             <button
               type="button"
               className={`movie-list-button ${
-                addedToList ? "added" : ""
+                addedToList
+                  ? "added"
+                  : ""
               }`}
               onClick={toggleMyList}
             >
-              {addedToList ? "✓" : "+"}
+              {addedToList
+                ? "✓"
+                : "+"}
             </button>
 
           </div>
@@ -171,15 +238,64 @@ export default function MovieCard({
         </div>
       </div>
 
-      {/* TRAILER MODAL */}
-      {showTrailer && movie.id !== undefined && 
-      (
-        <TrailerModal
-          movieId={movie.id}
-          title={title}
-          type={type}
-          onClose={() => setShowTrailer(false)}
-        />
+      {/* =========================
+          VIDEO / TRAILER MODAL
+      ========================= */}
+
+      {showTrailer && (
+        <>
+          {movie.videoUrl ? (
+
+            <div
+              className="video-modal-overlay"
+              onClick={() =>
+                setShowTrailer(false)
+              }
+            >
+
+              <div
+                className="video-modal-box"
+                onClick={(e) =>
+                  e.stopPropagation()
+                }
+              >
+
+                {/* CLOSE */}
+
+                <button
+                  className="video-close-button"
+                  onClick={() =>
+                    setShowTrailer(false)
+                  }
+                >
+                  ✕
+                </button>
+
+                {/* R2 VIDEO */}
+
+                <video
+                  src={movie.videoUrl}
+                  controls
+                  autoPlay
+                  className="r2-video-player"
+                />
+
+              </div>
+            </div>
+
+          ) : (
+
+            <TrailerModal
+              movieId={movie.id}
+              title={title}
+              type={type}
+              onClose={() =>
+                setShowTrailer(false)
+              }
+            />
+
+          )}
+        </>
       )}
     </>
   );

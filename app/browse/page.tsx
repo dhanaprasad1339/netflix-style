@@ -18,6 +18,7 @@ type Movie = {
   backdrop_path?: string;
   overview?: string;
   vote_average?: number;
+  
 };
 
 export default function BrowsePage() {
@@ -43,40 +44,7 @@ export default function BrowsePage() {
       <Banner />
 
       <div className="movie-section">
-        <MovieRow
-          title="Trending Now"
-          endpoint="/trending/all/week"
-        />
-
-        <MovieRow
-          title="Netflix Originals"
-          endpoint="/discover/tv?with_networks=213"
-        />
-
-        <MovieRow
-          title="Top Rated"
-          endpoint="/movie/top_rated"
-        />
-
-        <MovieRow
-          title="Action Movies"
-          endpoint="/discover/movie?with_genres=28"
-        />
-
-        <MovieRow
-          title="Comedy Movies"
-          endpoint="/discover/movie?with_genres=35"
-        />
-
-        <MovieRow
-          title="Horror Movies"
-          endpoint="/discover/movie?with_genres=27"
-        />
-
-        <MovieRow
-          title="Science Fiction"
-          endpoint="/discover/movie?with_genres=878"
-        />
+        <MovieRow title="My Movies"/>
       </div>
 
       {selectedMovie && (

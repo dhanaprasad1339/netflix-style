@@ -15,8 +15,8 @@ export default function Footer() {
 
         {/* Footer Links */}
         <div className="footer-links">
-
-          {/* Column 1 */}
+        {/* Column 1 */}
+      
           <div className="footer-column">
             <Link href="/faq">
               FAQ
